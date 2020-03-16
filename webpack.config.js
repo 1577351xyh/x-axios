@@ -1,6 +1,6 @@
 const path = require('path')
 
-module.exports = function (env={}) {
+module.exports = function (env = {}) {
   //true开发版
   const dev = env.dev;
 
@@ -8,7 +8,7 @@ module.exports = function (env={}) {
     //development开发版
     mode: dev ? 'development' : 'production',
     //入口
-    entry: './scr/index.js',
+    entry: './src/index.js',
     //结果文件
     output: {
       //生成路径
@@ -22,19 +22,21 @@ module.exports = function (env={}) {
     },
     module: {
       rules: [
-        { test: /\.js$/i, use:{
-          loader:'babel-loader',
-          options:{
-            presets:['@babel/preset-env']
+        {
+          test: /\.js$/i, use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env']
+            }
           }
-        }}
+        }
       ]
     },
     devtool: 'sourse-map',
     //热更新
-    devServer:{
-      port:8000,
-      open:true
+    devServer: {
+      port: 8000,
+      open: true
     }
   }
 }
