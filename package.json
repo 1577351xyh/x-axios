@@ -1,0 +1,20 @@
+{
+  "name": "x-axios",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/1577351xyh/x-axios.git",
+  "author": "1577351xyh <564146958@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "webpack-dev-server --env.dev",
+    "build": "webpack --env.prod"
+  },
+  "dependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}
