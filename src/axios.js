@@ -12,13 +12,26 @@ class Axios {
   constructor() {
     const _this = this;
     return new Proxy(request, {
-      //拦截函数的调用
+      //拦截函数的调用,当用户直接调用实例
       apply(fn, thisArgs, args) {
         /*fn --- request
           thisArg
           args-- 其他参
         */
-        console.log(fn, thisArgs, args)
+       let options = _this._preprocessArgs(undefined,args)
+       if(!options){
+         if(options.length===2){
+          assert(typeof args[0] =='string','args[0] must is string')
+          assert(typeof args[1] =='object' && args[1] && args[1].constructor == Object)
+          options={
+            ...args[1],
+            url:args[0]
+          }
+         }else{
+           assert(false,'invaild args')
+         }
+       }
+       this.request(options)
       },
       get(data, name) {
         return _this[name]
