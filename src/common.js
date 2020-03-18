@@ -3,18 +3,18 @@ export function assert(exp, msg = 'assert fiald') {
     throw new Error(msg)
   }
 }
-export function setOptions(obj1, obj2) {
-  for (let name in obj2) {
-    if (typeof obj2[name] == 'object') {
-      for (let name2 in obj2[name]) {
+export function merge(dest, src) {
+  for (let name in src) {
+    if (typeof src[name] == 'object') {
+      for (let name2 in src[name]) {
         //如果defalut没有
-        if (!obj1[name]) {
-          obj1[name] = {}
+        if (!dest[name]) {
+          dest[name] = {}
         }
       }
-      setOptions(obj1[name], obj2[name])
+      merge(dest[name], src[name])
     } else {
-      obj1[name] = obj2[name];
+      dest[name] = src[name];
     }
   }
 }

@@ -1,6 +1,6 @@
 export default {
   baseUrl: '',
-  methods: 'get',
+  method: 'get',
   headers: {
     common: {
       'X-Request-By': 'XMLHttpRequest'

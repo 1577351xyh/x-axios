@@ -5,7 +5,11 @@ let a = axios.create({
   methods: 'post',
   token: 1111
 })
-axios('./1.json')
+axios('./1.json',{
+  headers:{
+    a:12
+  }
+})
 // axios.get('url')
 // axios('/url',{
 //   method:'get',

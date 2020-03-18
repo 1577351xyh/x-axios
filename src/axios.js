@@ -1,7 +1,7 @@
 
 import _default from './defalut.js'
 import { request } from './request.js'
-import { setOptions,assert } from './common.js'
+import { merge,assert } from './common.js'
 
 
 
@@ -10,6 +10,7 @@ import { setOptions,assert } from './common.js'
 
 class Axios {
   constructor() {
+    this.default = _default
     const _this = this;
     return new Proxy(request, {
       //拦截函数的调用,当用户直接调用实例
@@ -20,7 +21,7 @@ class Axios {
         */
        let options = _this._preprocessArgs(undefined,args)
        if(!options){
-         if(options.length===2){
+         if(args.length===2){
           assert(typeof args[0] =='string','args[0] must is string')
           assert(typeof args[1] =='object' && args[1] && args[1].constructor == Object)
           options={
@@ -31,7 +32,7 @@ class Axios {
            assert(false,'invaild args')
          }
        }
-       this.request(options)
+       _this.request(options)
       },
       get(data, name) {
         return _this[name]
@@ -42,8 +43,19 @@ class Axios {
       }
     })
   }
-  request(){
+  request(options){
     // 1.和this.default进行合并
+    let _headers =this.default.headers;
+    delete this.default.headers;
+    merge(options,this.default);
+    this.default.headers = _headers;
+    //合并头
+    let headers={}
+    merge(headers,this.default.headers.common)
+    merge(headers,this.default.headers[options.method.toLowerCase()])
+    merge(headers,options.headers)
+    options.headers=headers
+    console.log(options)
     // 2.检测数据类型
     // 3.发送请求调用request
   }
@@ -138,7 +150,7 @@ Axios.create = Axios.prototype.create = function (options) {
   //处理初始值和default的合并
   // axios.default = JSON.parse(JSON.stringify(_default))
   let res = JSON.parse(JSON.stringify(_default))
-  setOptions(res,options)
+  merge(res,options)
   axios.default = res
   return axios
 }
