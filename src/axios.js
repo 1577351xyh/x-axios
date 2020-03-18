@@ -1,7 +1,7 @@
 
 import _default from './defalut.js'
 import { request } from './request.js'
-import { setOptions,assert } from './common'
+import { setOptions,assert } from './common.js'
 
 
 
@@ -29,11 +29,89 @@ class Axios {
       }
     })
   }
-  get() {
-    alert('get')
+  request(){
+    // 1.和this.default进行合并
+    // 2.检测数据类型
+    // 3.发送请求调用request
   }
-  set() {
+  _preprocessArgs(method,args){
+    let options ={}
+    if(args.length==1 && typeof args[0] =='string'){
+      options={
+        url:args[0],
+        method,
+      }
+    }else if(args.length==1 && args[0] && args[0].constructor == Object){
+      options={
+        ...args[0],
+        method,
+      }
+    }else{
+      //其他情况给方法自己进行处理
+      return undefined;
+    }
+    return options;
 
+  }
+  get(...args) {
+    let options = this._preprocessArgs('get',args)
+    //string && json两种情况
+    if(!options){
+      if(args.length==2){
+        assert(typeof args[0] =='string','args[0] must is string')
+        assert(typeof args[1] =='object' && args[1] && args[1].constructor == Object)
+        options={
+          method:'get',
+          url:args[0],
+          ...args[1]
+        }
+      }else{
+        assert(false,'invaild argments')
+      }
+     
+    } 
+  }
+  post(...args) {
+    let options = this._preprocessArgs('post',args)
+    //string && json两种情况
+    if(!options){
+      if(args.length==2){
+        assert(typeof args[0] =='string','args[0] must is string')
+        options={
+          method:'post',
+          url:args[0],
+          data:args[1]
+        }
+      }else if(args.length==3){
+        assert(typeof args[0] =='string','args[0] must is string')
+        assert(typeof args[2] =='object' && args[2] && args[2].constructor == Object)
+        options={
+          method:'post',
+          url:args[0],
+          data:args[1],
+          ...args[2]
+        }
+      }else{
+        assert(false,'invaild argments')
+      }
+    } 
+  }
+  delete(...args){
+    let options = this._preprocessArgs('delete',args)
+    //string && json两种情况
+    if(!options){
+      if(args.length===2){
+        assert(typeof args[0] =='string','args[0] must is string')
+        assert(typeof args[1] =='object' && args[1] && args[1].constructor == Object)
+        options={
+          method:'delete',
+          url:args[0],
+          ...args[1]
+        }
+      }else{
+        assert(false,'invaild argments')
+      }
+    } 
   }
 }
 

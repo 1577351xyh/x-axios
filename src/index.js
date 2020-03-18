@@ -3,9 +3,8 @@ import axios from './axios.js'
 let a = axios.create({
   baseUrl: 'aaaaaa',
   methods: 'post',
-  token:1111
+  token: 1111
 })
-console.log(a.default)
 // axios.get('url')
 // axios('/url',{
 //   method:'get',
@@ -13,12 +12,42 @@ console.log(a.default)
 //     a:1
 //   }
 // })
+// a.post('/1.json')
+a.post(
+  '/1.json',
+  { a: 1, b: 2 },
+  { headers: { b: 2 } },
+  12
+)
+
+// a.post('./1.json', {
+//   a: 1,
+//   b:5
+// })
+
+
 
 // get(url)
-// gte(url, { params: {}, headers: {} })
-// gte({ url: '', params: {}, headers: {} })
+// get(url, { params: {}, headers: {} })
+// get({ url: '', params: {}, headers: {} })
 
 
 // post(url)
 // post(url,{a:1,b:2})
+// post({url,params:{},headers:{}})
 
+
+// delete(url)
+// delete(url,{params:{},headers:{}})
+// delete({url,params:{},headers:{}})
+
+// ------
+//只有一个参数 string
+// get(string)
+// post(string)
+// delete(string)
+
+//只有一个参数 json
+// get({...})
+// post({...})
+// delete({...})
