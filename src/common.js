@@ -18,3 +18,6 @@ export function merge(dest, src) {
     }
   }
 }
+export function clone(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}

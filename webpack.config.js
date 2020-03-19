@@ -8,7 +8,9 @@ module.exports = function (env = {}) {
     //development开发版
     mode: dev ? 'development' : 'production',
     //入口
-    entry: './src/index.js',
+    // entry: './src/index.js', 
+    //babel/polyfill处理es6识别不了的babel,比如acsyn
+    entry: dev ? ['@babel/polyfill', './src/index.js'] : './src/axios.js',
     //结果文件
     output: {
       //生成路径
@@ -18,21 +20,23 @@ module.exports = function (env = {}) {
       //输出的文件名(便于调试)
       sourceMapFilename: dev ? 'Xaxios.map' : 'Xaxios.min.map',
       //成品出去是什么格式(作为模块)
-      libraryTarget: 'umd'
+      libraryTarget: 'umd',
     },
     module: {
       rules: [
         {
-          test: /\.js$/i, use: {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env']
+          test: /\.js$/i, use: [
+            {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env']
+              }
             }
-          }
+          ]
         }
       ]
     },
-    devtool: 'sourse-map',
+    devtool: 'source-map',
     //热更新
     devServer: {
       port: 8000,
