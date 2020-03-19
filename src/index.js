@@ -1,11 +1,11 @@
 import axios from './axios.js'
 
-let a = axios.create({
-  
-  methods: 'post',
-  token: 1111
-})
-axios('../1.json',{
+// let a = axios.create({
+
+//   methods: 'post',
+//   token: 1111
+// })
+axios('/data/1.json',{
   baseUrl: 'www.baidu.com',
   headers:{
     a:12
@@ -23,7 +23,7 @@ axios('../1.json',{
 //   '/1.json',
 //   { a: 1, b: 2 },
 //   { headers: { b: 2 } },
-  
+
 // )
 
 // a.post('./1.json', {

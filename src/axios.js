@@ -2,7 +2,7 @@
 import _default from './defalut.js';
 import { request } from './request.js';
 import { merge, assert, clone } from './common.js';
-// const urllib = require('url')
+const urllib = require('url')
 
 
 
@@ -64,8 +64,8 @@ class Axios {
     assert(options.url, 'no url')
     assert(typeof options.url == 'string', 'url must be string')
     // 3.合并baseurl  require  bug
-    // options.url = urllib.resolve(options.baseUrl, options.url)
-    options.url = options.baseUrl + options.url;
+    options.url = urllib.resolve(options.baseUrl, options.url)
+    // options.url = options.baseUrl + options.url;
     delete options.baseUrl;
     // 4.发送请求调用request
     request(options)

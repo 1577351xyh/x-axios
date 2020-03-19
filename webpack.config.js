@@ -1,46 +1,37 @@
-const path = require('path')
+const path=require('path');
+const Strip=require('strip-loader');
 
-module.exports = function (env = {}) {
-  //true开发版
-  const dev = env.dev;
+module.exports=function (env={}){
+  const dev=env.dev;
 
   return {
-    //development开发版
-    mode: dev ? 'development' : 'production',
-    //入口
-    // entry: './src/index.js', 
-    //babel/polyfill处理es6识别不了的babel,比如acsyn
-    entry: dev ? ['@babel/polyfill', './src/index.js'] : './src/axios.js',
-    //结果文件
+    mode: dev?'development':'production',
+    entry: dev?['@babel/polyfill', './src/index.js']:'./src/axios.js',
     output: {
-      //生成路径
       path: path.resolve(__dirname, 'dist'),
-      //文件名
-      filename: dev ? 'Xaxios.js' : 'Xaxios.min.js',
-      //输出的文件名(便于调试)
-      sourceMapFilename: dev ? 'Xaxios.map' : 'Xaxios.min.map',
-      //成品出去是什么格式(作为模块)
+      filename: dev?'axios.js':'axios.min.js',
+      sourceMapFilename: dev?'axios.map':'axios.min.map',
       libraryTarget: 'umd',
     },
     module: {
       rules: [
-        {
-          test: /\.js$/i, use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                presets: ['@babel/preset-env']
-              }
+        {test: /\.js$/i, use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env']
             }
-          ]
-        }
+          },
+          ...dev?[]:[{
+            loader: Strip.loader('alert', 'assert')
+          }],
+        ]}
       ]
     },
     devtool: 'source-map',
-    //热更新
     devServer: {
-      port: 8000,
-      open: true
+      port: 8080,
+      open: true,
     }
-  }
-}
+  };
+};
