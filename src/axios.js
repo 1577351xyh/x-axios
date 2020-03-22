@@ -3,6 +3,8 @@ import _default from './defalut.js';
 import { request } from './request.js';
 import { merge, assert, clone } from './common.js';
 const urllib = require('url')
+import creteResponse from './response'
+import creteError from './error'
 
 
 
@@ -31,7 +33,7 @@ class Axios {
             assert(false, 'invaild args')
           }
         }
-        _this.request(options)
+       return _this._request(options)
       },
       get(data, name) {
         return _this[name]
@@ -42,7 +44,7 @@ class Axios {
       }
     })
   }
-  request(options) {
+  async _request(options) {
     let _headers = this.default.headers;
     delete this.default.headers;
     //克隆一份默认值
@@ -67,91 +69,105 @@ class Axios {
     options.url = urllib.resolve(options.baseUrl, options.url)
     // options.url = options.baseUrl + options.url;
     delete options.baseUrl;
-    // 4.发送请求调用request
-    request(options)
+
+    // 3.请求拦截
+    
+
+    //4调用request
+    // 4.1帮用户处理数据,包裹错误
+    return new Promise((resolve, reject) => {
+    // 4.0发送请求调用request
+      request(options).then(xhr => {
+        resolve(creteResponse(xhr))
+      }, xhr => {
+        reject(creteError(xhr))
+    })
+  })
+
+  
+}
+_preprocessArgs(method, args) {
+  let options = {}
+  if (args.length == 1 && typeof args[0] == 'string') {
+    options = {
+      url: args[0],
+      method,
+    }
+  } else if (args.length == 1 && args[0] && args[0].constructor == Object) {
+    options = {
+      ...args[0],
+      method,
+    }
+  } else {
+    //其他情况给方法自己进行处理
+    return undefined;
   }
-  _preprocessArgs(method, args) {
-    let options = {}
-    if (args.length == 1 && typeof args[0] == 'string') {
+  return options;
+
+}
+get(...args) {
+  let options = this._preprocessArgs('get', args)
+  //string && json两种情况
+  if (!options) {
+    if (args.length == 2) {
+      assert(typeof args[0] == 'string', 'args[0] must is string')
+      assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
       options = {
+        method: 'get',
         url: args[0],
-        method,
-      }
-    } else if (args.length == 1 && args[0] && args[0].constructor == Object) {
-      options = {
-        ...args[0],
-        method,
+        ...args[1]
       }
     } else {
-      //其他情况给方法自己进行处理
-      return undefined;
+      assert(false, 'invaild argments')
     }
-    return options;
 
   }
-  get(...args) {
-    let options = this._preprocessArgs('get', args)
-    //string && json两种情况
-    if (!options) {
-      if (args.length == 2) {
-        assert(typeof args[0] == 'string', 'args[0] must is string')
-        assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
-        options = {
-          method: 'get',
-          url: args[0],
-          ...args[1]
-        }
-      } else {
-        assert(false, 'invaild argments')
+  return this._request(options)
+}
+post(...args) {
+  let options = this._preprocessArgs('post', args)
+  //string && json两种情况
+  if (!options) {
+    if (args.length == 2) {
+      assert(typeof args[0] == 'string', 'args[0] must is string')
+      options = {
+        method: 'post',
+        url: args[0],
+        data: args[1]
       }
-
-    }
-    return request(options)
-  }
-  post(...args) {
-    let options = this._preprocessArgs('post', args)
-    //string && json两种情况
-    if (!options) {
-      if (args.length == 2) {
-        assert(typeof args[0] == 'string', 'args[0] must is string')
-        options = {
-          method: 'post',
-          url: args[0],
-          data: args[1]
-        }
-      } else if (args.length == 3) {
-        assert(typeof args[0] == 'string', 'args[0] must is string')
-        assert(typeof args[2] == 'object' && args[2] && args[2].constructor == Object)
-        options = {
-          method: 'post',
-          url: args[0],
-          data: args[1],
-          ...args[2]
-        }
-      } else {
-        assert(false, 'invaild argments')
+    } else if (args.length == 3) {
+      assert(typeof args[0] == 'string', 'args[0] must is string')
+      assert(typeof args[2] == 'object' && args[2] && args[2].constructor == Object)
+      options = {
+        method: 'post',
+        url: args[0],
+        data: args[1],
+        ...args[2]
       }
+    } else {
+      assert(false, 'invaild argments')
     }
-    return request(options)
   }
-  delete(...args) {
-    let options = this._preprocessArgs('delete', args)
-    //string && json两种情况
-    if (!options) {
-      if (args.length === 2) {
-        assert(typeof args[0] == 'string', 'args[0] must is string')
-        assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
-        options = {
-          method: 'delete',
-          url: args[0],
-          ...args[1]
-        }
-      } else {
-        assert(false, 'invaild argments')
+  return this._request(options)
+}
+delete (...args) {
+  let options = this._preprocessArgs('delete', args)
+  //string && json两种情况
+  if (!options) {
+    if (args.length === 2) {
+      assert(typeof args[0] == 'string', 'args[0] must is string')
+      assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
+      options = {
+        method: 'delete',
+        url: args[0],
+        ...args[1]
       }
+    } else {
+      assert(false, 'invaild argments')
     }
-    return request(options)
   }
+  return this._request(options)
+}
 }
 
 //如何让用户能够同时在实例上调用,也能直接在类上调用

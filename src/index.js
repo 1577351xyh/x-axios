@@ -5,12 +5,33 @@ import axios from './axios.js'
 //   methods: 'post',
 //   token: 1111
 // })
-axios('/data/1.json',{
-  baseUrl: 'www.baidu.com',
-  headers:{
-    a:12
-  }
-})
+// axios('/data/1.json', {
+//   // baseUrl: 'www.baidu.com',
+//   headers: {
+//     a: 12
+//   }
+// }).then(res=>{
+//   console.log(res)
+// })
+
+(async () => {
+  // let res = await axios.get('/data/1.json', {
+  //   // baseUrl: 'www.baidu.com',
+  //   headers: {
+  //     a: 12
+  //   }
+  // })
+  // console.log(res)
+
+  let res1 = await axios('/data/1.json', {
+    // baseUrl: 'www.baidu.com',
+    headers: {
+      a: 12
+    }
+  })
+  console.log(res1)
+})();
+
 // axios.get('url')
 // axios('/url',{
 //   method:'get',
