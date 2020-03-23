@@ -14,14 +14,25 @@ import axios from './axios.js'
 //   console.log(res)
 // })
 
+
 (async () => {
-  // let res = await axios.get('/data/1.json', {
-  //   // baseUrl: 'www.baidu.com',
-  //   headers: {
-  //     a: 12
-  //   }
-  // })
-  // console.log(res)
+  //   // let res = await axios.get('/data/1.json', {
+  //   //   // baseUrl: 'www.baidu.com',
+  //   //   headers: {
+  //   //     a: 12
+  //   //   }
+  //   // })
+  //   // console.log(res)
+
+
+  axios.interceptors.request.use(function (config) {
+    config.headers.token = 999;
+    return config
+  })
+  axios.interceptors.response.use(function (res) {
+    res.data.ac = 99
+    return res
+  })
 
   let res1 = await axios('/data/1.json', {
     // baseUrl: 'www.baidu.com',
@@ -31,7 +42,11 @@ import axios from './axios.js'
     transformRequest(config) {
       config.headers.b = 99;
       return config
-    }
+    },
+    // transformResponse(res) {
+    //   // console.log(res)
+    //   return res
+    // }
   })
   console.log(res1)
 

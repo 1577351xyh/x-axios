@@ -5,13 +5,16 @@ import { merge, assert, clone } from './common.js';
 const urllib = require('url')
 import creteResponse from './response'
 import creteError from './error'
-
-
+import interceptors from './interceptors'
 
 //默认参数
 class Axios {
   constructor() {
     this.default = _default
+    this.interceptors = {
+      request: new interceptors(),
+      response: new interceptors(),
+    }
     const _this = this;
     return new Proxy(request, {
       //拦截函数的调用,当用户直接调用实例
@@ -61,36 +64,41 @@ class Axios {
     merge(headers, options.headers)
     options.headers = headers
     // 2.检测参数是否正确
-    assert(options.method, 'no method')
-    assert(typeof options.method == 'string', 'method must be string')
-    assert(options.url, 'no url')
-    assert(typeof options.url == 'string', 'url must be string')
+    chekOptions(options)
     // 3.合并baseurl  require  bug
     options.url = urllib.resolve(options.baseUrl, options.url)
     // options.url = options.baseUrl + options.url;
     delete options.baseUrl;
-
     // 3.请求拦截
-    console.log(options)
     const { transformRequest, transformResponse } = options;
     delete options.transformRequest
     delete options.transformResponse
     options = transformRequest(options)
+    chekOptions(options)
 
+    //全局拦截
+    let list = this.interceptors.request.list()
+    list.forEach(fn => {
+      options = fn(options)
+      chekOptions(options)
+    })
     //4调用request
     // 4.1帮用户处理数据,包裹错误
     return new Promise((resolve, reject) => {
       // 4.0发送请求调用request
       request(options).then(xhr => {
         let res = creteResponse(xhr)
-        res = transformResponse(res.data);
+        res.data = transformResponse(res.data);
+        let list = this.interceptors.response.list();
+        list.forEach((fn)=>{
+          res = fn(res)
+        })
+
         resolve(res)
       }, xhr => {
         reject(creteError(xhr))
       })
     })
-
-
   }
   _preprocessArgs(method, args) {
     let options = {}
@@ -189,6 +197,14 @@ Axios.create = Axios.prototype.create = function (options) {
   merge(res, options)
   axios.default = res
   return axios
+}
+
+function chekOptions(options) {
+  assert(options, 'options is requier')
+  assert(options.method, 'no method')
+  assert(typeof options.method == 'string', 'method must be string')
+  assert(options.url, 'no url')
+  assert(typeof options.url == 'string', 'url must be string')
 }
 
 export default Axios.create();
