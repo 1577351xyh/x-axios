@@ -27,9 +27,14 @@ import axios from './axios.js'
     // baseUrl: 'www.baidu.com',
     headers: {
       a: 12
+    },
+    transformRequest(config) {
+      config.headers.b = 99;
+      return config
     }
   })
   console.log(res1)
+
 })();
 
 // axios.get('url')

@@ -33,7 +33,7 @@ class Axios {
             assert(false, 'invaild args')
           }
         }
-       return _this._request(options)
+        return _this._request(options)
       },
       get(data, name) {
         return _this[name]
@@ -72,102 +72,108 @@ class Axios {
 
     // 3.请求拦截
     console.log(options)
+    const { transformRequest, transformResponse } = options;
+    delete options.transformRequest
+    delete options.transformResponse
+    options = transformRequest(options)
 
     //4调用request
     // 4.1帮用户处理数据,包裹错误
     return new Promise((resolve, reject) => {
-    // 4.0发送请求调用request
+      // 4.0发送请求调用request
       request(options).then(xhr => {
-        resolve(creteResponse(xhr))
+        let res = creteResponse(xhr)
+        res = transformResponse(res.data);
+        resolve(res)
       }, xhr => {
         reject(creteError(xhr))
+      })
     })
-  })
 
-  
-}
-_preprocessArgs(method, args) {
-  let options = {}
-  if (args.length == 1 && typeof args[0] == 'string') {
-    options = {
-      url: args[0],
-      method,
-    }
-  } else if (args.length == 1 && args[0] && args[0].constructor == Object) {
-    options = {
-      ...args[0],
-      method,
-    }
-  } else {
-    //其他情况给方法自己进行处理
-    return undefined;
-  }
-  return options;
-
-}
-get(...args) {
-  let options = this._preprocessArgs('get', args)
-  //string && json两种情况
-  if (!options) {
-    if (args.length == 2) {
-      assert(typeof args[0] == 'string', 'args[0] must is string')
-      assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
-      options = {
-        method: 'get',
-        url: args[0],
-        ...args[1]
-      }
-    } else {
-      assert(false, 'invaild argments')
-    }
 
   }
-  return this._request(options)
-}
-post(...args) {
-  let options = this._preprocessArgs('post', args)
-  //string && json两种情况
-  if (!options) {
-    if (args.length == 2) {
-      assert(typeof args[0] == 'string', 'args[0] must is string')
+  _preprocessArgs(method, args) {
+    let options = {}
+    if (args.length == 1 && typeof args[0] == 'string') {
       options = {
-        method: 'post',
         url: args[0],
-        data: args[1]
+        method,
       }
-    } else if (args.length == 3) {
-      assert(typeof args[0] == 'string', 'args[0] must is string')
-      assert(typeof args[2] == 'object' && args[2] && args[2].constructor == Object)
+    } else if (args.length == 1 && args[0] && args[0].constructor == Object) {
       options = {
-        method: 'post',
-        url: args[0],
-        data: args[1],
-        ...args[2]
+        ...args[0],
+        method,
       }
     } else {
-      assert(false, 'invaild argments')
+      //其他情况给方法自己进行处理
+      return undefined;
     }
+    return options;
+
   }
-  return this._request(options)
-}
-delete (...args) {
-  let options = this._preprocessArgs('delete', args)
-  //string && json两种情况
-  if (!options) {
-    if (args.length === 2) {
-      assert(typeof args[0] == 'string', 'args[0] must is string')
-      assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
-      options = {
-        method: 'delete',
-        url: args[0],
-        ...args[1]
+  get(...args) {
+    let options = this._preprocessArgs('get', args)
+    //string && json两种情况
+    if (!options) {
+      if (args.length == 2) {
+        assert(typeof args[0] == 'string', 'args[0] must is string')
+        assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
+        options = {
+          method: 'get',
+          url: args[0],
+          ...args[1]
+        }
+      } else {
+        assert(false, 'invaild argments')
       }
-    } else {
-      assert(false, 'invaild argments')
+
     }
+    return this._request(options)
   }
-  return this._request(options)
-}
+  post(...args) {
+    let options = this._preprocessArgs('post', args)
+    //string && json两种情况
+    if (!options) {
+      if (args.length == 2) {
+        assert(typeof args[0] == 'string', 'args[0] must is string')
+        options = {
+          method: 'post',
+          url: args[0],
+          data: args[1]
+        }
+      } else if (args.length == 3) {
+        assert(typeof args[0] == 'string', 'args[0] must is string')
+        assert(typeof args[2] == 'object' && args[2] && args[2].constructor == Object)
+        options = {
+          method: 'post',
+          url: args[0],
+          data: args[1],
+          ...args[2]
+        }
+      } else {
+        assert(false, 'invaild argments')
+      }
+    }
+    return this._request(options)
+  }
+  delete(...args) {
+    let options = this._preprocessArgs('delete', args)
+    //string && json两种情况
+    if (!options) {
+      if (args.length === 2) {
+        assert(typeof args[0] == 'string', 'args[0] must is string')
+        assert(typeof args[1] == 'object' && args[1] && args[1].constructor == Object)
+        options = {
+          method: 'delete',
+          url: args[0],
+          ...args[1]
+        }
+      } else {
+        assert(false, 'invaild argments')
+      }
+    }
+    return this._request(options)
+  }
 }
 
 //如何让用户能够同时在实例上调用,也能直接在类上调用
@@ -179,9 +185,7 @@ Axios.create = Axios.prototype.create = function (options) {
   //axios返回的是proxy对象
   //处理初始值和default的合并
   // axios.default = JSON.parse(JSON.stringify(_default))
-  console.log(_default)
   let res = clone(_default)
-  console.log(res)
   merge(res, options)
   axios.default = res
   return axios

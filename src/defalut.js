@@ -8,11 +8,11 @@ export default {
     get: {},
     post: {}
   },
-  //请求拦截
+  //实例请求拦截
   transformRequest(config) {
     return config
   },
-  //响应拦截
+  //实例响应拦截
   transformResponse(response) {
     return JSON.parse(response)
   }
