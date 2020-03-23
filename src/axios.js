@@ -71,7 +71,7 @@ class Axios {
     delete options.baseUrl;
 
     // 3.请求拦截
-    
+    console.log(options)
 
     //4调用request
     // 4.1帮用户处理数据,包裹错误
@@ -179,7 +179,9 @@ Axios.create = Axios.prototype.create = function (options) {
   //axios返回的是proxy对象
   //处理初始值和default的合并
   // axios.default = JSON.parse(JSON.stringify(_default))
+  console.log(_default)
   let res = clone(_default)
+  console.log(res)
   merge(res, options)
   axios.default = res
   return axios
