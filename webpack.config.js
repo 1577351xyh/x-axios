@@ -1,11 +1,14 @@
 const path=require('path');
+//分割
 const Strip=require('strip-loader');
 
 module.exports=function (env={}){
   const dev=env.dev;
 
   return {
+    //编译模式
     mode: dev?'development':'production',
+    //编译入口
     entry: dev?['@babel/polyfill', './src/index.js']:'./src/axios.js',
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -22,6 +25,7 @@ module.exports=function (env={}){
               presets: ['@babel/preset-env']
             }
           },
+          //去掉不用的
           ...dev?[]:[{
             loader: Strip.loader('alert', 'assert')
           }],

@@ -14,7 +14,9 @@ export function merge(dest, src) {
       }
       merge(dest[name], src[name])
     } else {
-      dest[name] = src[name];
+      if (src[name] !== undefined) {
+        dest[name] = src[name];
+      }
     }
   }
 }
